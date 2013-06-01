@@ -22,7 +22,10 @@ def virtualenv():
     with cd('/vagrant'):
         eid = 'export AWS_ACCESS_KEY_ID={}'.format(env.aws_access_key_id)
         ekey = 'export AWS_SECRET_ACCESS_KEY={}'.format(env.aws_secret_access_key)
-        with prefix('source {} && export SECRET_KEY=dev && {} && {}'.format(activate_script, eid, ekey)):
+        name = config['project'].get('name')
+        epythonpath = 'export PYTHONPATH={}'.format(os.path.join('/', 'vagrant', name)) 
+        with prefix('source {} && export SECRET_KEY=dev && {} && {} && {}'.format(activate_script, eid, ekey,
+            epythonpath)):
             yield
 
 
