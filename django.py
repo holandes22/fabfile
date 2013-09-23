@@ -37,10 +37,12 @@ def django_shell():
 
 
 def collectstatic():
-    require('aws_access_key_id', 'aws_secret_access_key')
     with virtualenv():
         run('python manage.py collectstatic --settings={}'.format(env.settings_file))
 
+def collectstatic_aws():
+    require('aws_access_key_id', 'aws_secret_access_key')
+    collectstatic()
 
 def syncdb():
     with virtualenv():
