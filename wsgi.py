@@ -5,7 +5,7 @@ from common import virtualenv
 PID_PATH = '/tmp/gunicorn.pid'
 
 def stopwsgi():
-    run('kill `{}`'.format(PID_PATH))
+    run('kill `cat {}`'.format(PID_PATH))
 
 
 def startwsgi():
