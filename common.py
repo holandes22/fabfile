@@ -1,9 +1,10 @@
 import os
 import yaml
+from contextlib import contextmanager
+
 from fabric.operations import prompt
 from fabric.context_managers import prefix
-from fabric.api import env, local, run, cd, require
-from contextlib import contextmanager
+from fabric.api import env, local, cd, require, task
 
 
 def get_project_config():
@@ -14,8 +15,8 @@ def get_project_config():
 
 @contextmanager
 def virtualenv():
-    _verify_settings_type_is_set()
-    _verify_aws_keys_are_set()
+    verify_settings_type_is_set()
+    verify_aws_keys_are_set()
     require('settings_file')
     config = get_project_config()
     activate_script = os.path.join(config['project'].get('virtualenv'), 'bin', 'activate')
@@ -26,22 +27,26 @@ def virtualenv():
             yield
 
 
+@task
 def vagrant():
     # change from the default user to 'vagrant'
     env.user = 'vagrant'
     # connect to the port-forwarded ssh
     hostname = local('vagrant ssh-config | grep HostName', capture=True)
     port = local('vagrant ssh-config | grep Port', capture=True)
-    env.hosts = ['{0}:{1}'.format(hostname.split()[1], port.split()[1]), ]
+    env.hosts = ['{}:{}'.format(hostname.split()[1], port.split()[1]), ]
 
     # use vagrant ssh key
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     env.key_filename = result.split()[1].strip('"')
 
 
-def _verify_settings_type_is_set():
+def verify_settings_type_is_set():
     if not 'settings_type' in env:
-        env.settings_type = prompt("Settings type to [prod|dev]", default='dev')
+        env.settings_type = prompt(
+            'Settings type to [prod|dev]',
+            default='dev'
+        )
     config = get_project_config()
     name = config['project'].get('name')
     if env.settings_type == 'dev':
@@ -49,7 +54,8 @@ def _verify_settings_type_is_set():
     else:
         env.settings_file = '{}.settings.prod'.format(name)
 
-def _verify_aws_keys_are_set():
+
+def verify_aws_keys_are_set():
     if not 'aws_access_key_id' in env:
         env.aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
     if not 'aws_secret_access_key' in env:
