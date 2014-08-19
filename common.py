@@ -11,7 +11,8 @@ def get_project_config():
     here = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
     conf_parser = ConfigParser()
     with open(os.path.join(here, 'Fabfile')) as f:
-        return conf_parser.readfp(f)
+        conf_parser.readfp(f)
+    return conf_parser
 
 
 @contextmanager
