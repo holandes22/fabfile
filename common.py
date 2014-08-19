@@ -9,7 +9,7 @@ from fabric.api import env, local, cd, require, task
 
 def get_project_config():
     here = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    with open(os.path.join(here, 'Fabfile.yaml')) as f:
+    with open(os.path.join(here, 'Fabfile.yml')) as f:
         return yaml.load(f)
 
 
