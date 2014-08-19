@@ -1,6 +1,6 @@
 import os
-import yaml
 from contextlib import contextmanager
+from ConfigParser import ConfigParser
 
 from fabric.operations import prompt
 from fabric.context_managers import prefix
@@ -9,8 +9,9 @@ from fabric.api import env, local, cd, require, task
 
 def get_project_config():
     here = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-    with open(os.path.join(here, 'Fabfile.yml')) as f:
-        return yaml.load(f)
+    conf_parser = ConfigParser()
+    with open(os.path.join(here, 'Fabfile')) as f:
+        return conf_parser.readfp(f)
 
 
 @contextmanager
@@ -19,7 +20,7 @@ def virtualenv():
     verify_aws_keys_are_set()
     require('settings_file')
     config = get_project_config()
-    activate_script = os.path.join(config['project'].get('virtualenv'), 'bin', 'activate')
+    activate_script = os.path.join(config.get('project', 'virtualenv'), 'bin', 'activate')
     with cd('/vagrant'):
         eid = 'export AWS_ACCESS_KEY_ID={}'.format(env.aws_access_key_id)
         ekey = 'export AWS_SECRET_ACCESS_KEY={}'.format(env.aws_secret_access_key)
@@ -48,7 +49,7 @@ def verify_settings_type_is_set():
             default='dev'
         )
     config = get_project_config()
-    name = config['project'].get('name')
+    name = config.get('project', 'name')
     if env.settings_type == 'dev':
         env.settings_file = '{}.settings.dev'.format(name)
     else:
