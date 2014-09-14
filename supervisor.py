@@ -8,8 +8,8 @@ def restart_celery():
     with virtualenv():
         run('{}/bin/supervisorctl restart celery'.format(env.virtualenv))
 
+
 @task
-def restart_celerybeat()
+def restart_celerybeat():
     with virtualenv():
         run('{}/bin/supervisorctl restart celerybeat'.format(env.virtualenv))
-
