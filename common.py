@@ -52,6 +52,8 @@ def verify_settings_type_is_set():
     config = get_project_config()
     name = config.get('project', 'name')
     env.name = name
+    virtualenv = config.get('project', 'virtualenv')
+    env.virtualenv = virtualenv
     if env.settings_type == 'dev':
         env.settings_file = '{}.settings.dev'.format(name)
     else:
