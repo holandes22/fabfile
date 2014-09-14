@@ -3,3 +3,4 @@ from db import *
 from wsgi import *
 from django import *
 from celery import *
+from supervisor import *
